@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gallery</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="gallery.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <h1>Gallery</h1>
+
+      <div class="filter-buttons" role="group" aria-label="Filter gallery">
+        <button
+          class="active"
+          type="button"
+          data-filter="landscape"
+          aria-pressed="true"
+        >
+          Landscapes
+        </button>
+        <button type="button" data-filter="portrait" aria-pressed="false">
+          Portraits
+        </button>
+        <button type="button" data-filter="architecture" aria-pressed="false">
+          Architecture
+        </button>
+      </div>
+      <p class="visually-hidden" aria-live="polite" id="gallery-status"></p>
+
+      <div class="gallery">
+        <div class="card" data-category="landscape">
+          <img src="Landscape1.jpg" alt="Mountain landscape at sunrise" />
+          <div class="card-content">
+            <h3>Mountain View</h3>
+            <span class="tag">Landscape</span>
+          </div>
+          <div class="overlay">Beautiful mountain scenery during sunrise.</div>
+        </div>
+
+        <div class="card" data-category="landscape">
+          <img src="Landscape2.jpg" alt="Path through a green forest" />
+          <div class="card-content">
+            <h3>Forest Path</h3>
+            <span class="tag">Landscape</span>
+          </div>
+          <div class="overlay">A peaceful green forest trail.</div>
+        </div>
+
+        <div class="card" data-category="landscape">
+          <img src="Landscape3.jpg" alt="Sunset over the ocean" />
+          <div class="card-content">
+            <h3>Ocean Sunset</h3>
+            <span class="tag">Landscape</span>
+          </div>
+          <div class="overlay">Golden sunset over the ocean.</div>
+        </div>
+
+        <div class="card" data-category="landscape">
+          <img src="Landscape4.jpg" alt="Green rolling countryside hills" />
+          <div class="card-content">
+            <h3>Rolling Hills</h3>
+            <span class="tag">Landscape</span>
+          </div>
+          <div class="overlay">Open countryside with green hills.</div>
+        </div>
+
+        <div class="card" data-category="portrait">
+          <img src="portrait1.jpg" alt="Smiling woman" />
+          <div class="card-content">
+            <h3>Smiling Woman</h3>
+            <span class="tag">Portrait</span>
+          </div>
+          <div class="overlay">Professional portrait photography.</div>
+        </div>
+
+        <div class="card" data-category="portrait">
+          <img src="portrait2.jpg" alt="Artist in a studio" />
+          <div class="card-content">
+            <h3>Creative Artist</h3>
+            <span class="tag">Portrait</span>
+          </div>
+          <div class="overlay">Artistic portrait with studio lighting.</div>
+        </div>
+
+        <div class="card" data-category="portrait">
+          <img src="portrait3.jpg" alt="Businessman" />
+          <div class="card-content">
+            <h3>Businessman</h3>
+            <span class="tag">Portrait</span>
+          </div>
+          <div class="overlay">Corporate style portrait image.</div>
+        </div>
+
+        <div class="card" data-category="portrait">
+          <img src="portrait4.jpg" alt="Young explorer outdoors" />
+          <div class="card-content">
+            <h3>Young Explorer</h3>
+            <span class="tag">Portrait</span>
+          </div>
+          <div class="overlay">Lifestyle portrait in natural light.</div>
+        </div>
+
+        <div class="card" data-category="architecture">
+          <img src="Architecture1.jpg" alt="Modern skyscraper" />
+          <div class="card-content">
+            <h3>Modern Tower</h3>
+            <span class="tag">Architecture</span>
+          </div>
+          <div class="overlay">Contemporary skyscraper design.</div>
+        </div>
+
+        <div class="card" data-category="architecture">
+          <img src="Architecture2.jpg" alt="Historic church" />
+          <div class="card-content">
+            <h3>Historic Church</h3>
+            <span class="tag">Architecture</span>
+          </div>
+          <div class="overlay">Classic architectural masterpiece.</div>
+        </div>
+
+        <div class="card" data-category="architecture">
+          <img src="Architecture3.jpg" alt="Urban bridge" />
+          <div class="card-content">
+            <h3>Urban Bridge</h3>
+            <span class="tag">Architecture</span>
+          </div>
+          <div class="overlay">Large bridge connecting city districts.</div>
+        </div>
+
+        <div class="card" data-category="architecture">
+          <img src="Architecture4.jpg" alt="Modern glass office building" />
+          <div class="card-content">
+            <h3>Glass Building</h3>
+            <span class="tag">Architecture</span>
+          </div>
+          <div class="overlay">Modern office building with glass facade.</div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const filterButtons = document.querySelectorAll(
+        ".filter-buttons [data-filter]",
+      );
+      const cards = document.querySelectorAll(".gallery .card[data-category]");
+      const galleryStatus = document.querySelector("#gallery-status");
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      );
+
+      function filterGallery(category, button) {
+        const previousPositions = new Map();
+
+        cards.forEach((card) => {
+          if (!card.hidden) {
+            previousPositions.set(card, card.getBoundingClientRect());
+          }
+        });
+
+        filterButtons.forEach((filterButton) => {
+          const isActive = filterButton === button;
+          filterButton.classList.toggle("active", isActive);
+          filterButton.setAttribute("aria-pressed", String(isActive));
+        });
+
+        let visibleCount = 0;
+        cards.forEach((card) => {
+          const shouldShow = card.dataset.category === category;
+          card.hidden = !shouldShow;
+          if (shouldShow) visibleCount += 1;
+        });
+
+        const label = button.textContent.trim();
+        galleryStatus.textContent = `Showing ${visibleCount} ${label.toLowerCase()}.`;
+
+        if (reducedMotion.matches) return;
+
+        cards.forEach((card) => {
+          if (card.hidden) return;
+
+          const previousPosition = previousPositions.get(card);
+          if (!previousPosition) {
+            card.animate(
+              [
+                { opacity: 0, transform: "scale(0.96)" },
+                { opacity: 1, transform: "scale(1)" },
+              ],
+              { duration: 300, easing: "ease-out" },
+            );
+            return;
+          }
+
+          const nextPosition = card.getBoundingClientRect();
+          const deltaX = previousPosition.left - nextPosition.left;
+          const deltaY = previousPosition.top - nextPosition.top;
+
+          if (deltaX || deltaY) {
+            card.animate(
+              [
+                { transform: `translate(${deltaX}px, ${deltaY}px)` },
+                { transform: "translate(0, 0)" },
+              ],
+              { duration: 350, easing: "ease-in-out" },
+            );
+          }
+        });
+      }
+
+      filterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          filterGallery(button.dataset.filter, button);
+        });
+      });
+
+      const initialButton = document.querySelector(
+        ".filter-buttons [data-filter].active",
+      );
+      filterGallery(initialButton.dataset.filter, initialButton);
+    </script>
+  </body>
+</html>

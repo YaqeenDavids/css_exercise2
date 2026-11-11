@@ -15,9 +15,12 @@
         <button
           class="active"
           type="button"
-          data-filter="landscape"
+          data-filter="all"
           aria-pressed="true"
         >
+          All
+        </button>
+        <button type="button" data-filter="landscape" aria-pressed="false">
           Landscapes
         </button>
         <button type="button" data-filter="portrait" aria-pressed="false">
@@ -167,13 +170,17 @@
 
         let visibleCount = 0;
         cards.forEach((card) => {
-          const shouldShow = card.dataset.category === category;
+          const shouldShow =
+            category === "all" || card.dataset.category === category;
           card.hidden = !shouldShow;
           if (shouldShow) visibleCount += 1;
         });
 
         const label = button.textContent.trim();
-        galleryStatus.textContent = `Showing ${visibleCount} ${label.toLowerCase()}.`;
+        galleryStatus.textContent =
+          category === "all"
+            ? `Showing all ${visibleCount} items.`
+            : `Showing ${visibleCount} ${label.toLowerCase()}.`;
 
         if (reducedMotion.matches) return;
 
